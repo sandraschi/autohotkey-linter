@@ -1,4 +1,0 @@
-lark>=1.1.0
-click>=8.0
-fastapi>=0.139.0
-uvicorn>=0.50.2
