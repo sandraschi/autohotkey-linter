@@ -22,7 +22,7 @@ from reporter import JSONReporter, SARIFReporter, TerminalReporter
 def load_grammar() -> Lark | None:
     grammar_path = Path(__file__).parent / "grammar.lark"
     try:
-        return Lark.open(grammar_path, parser="lalr", maybe_placeholders=True)
+        return Lark.open(grammar_path, parser="earley", maybe_placeholders=True)
     except Exception as e:
         click.echo(
             f"Warning: Grammar loading failed ({e}). Falling back to regex-only mode.", err=True

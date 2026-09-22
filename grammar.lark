@@ -12,7 +12,6 @@ global_assign: "global" variable ":=" expression
 static_assign: "static" variable ":=" expression
 
 if_stmt: "if" "("? expression ")"? block ("else" "if" "("? expression ")"? block)* ("else" block)?
-       | "if" "("? expression ")"? block
 
 loop_stmt: "Loop" expression? block
           | "Loop" "Files" expression ("," expression)* block

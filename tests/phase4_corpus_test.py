@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from ahk_lint import Linter, LinterConfig, load_grammar
 
 
-def test_scripts(label: str, dir_path: Path) -> list[dict]:
+def run_corpus_scripts(label: str, dir_path: Path) -> list[dict]:
     grammar = load_grammar()
     config = LinterConfig.load()
     linter = Linter(config, grammar)
@@ -65,19 +65,19 @@ if __name__ == "__main__":
 
     v1_results = []
     if v1_dir.exists():
-        v1_results = test_scripts("V1 SCRIPTS (before migration)", v1_dir)
+        v1_results = run_corpus_scripts("V1 SCRIPTS (before migration)", v1_dir)
     else:
         print(f"\nNo v1 fixtures at {v1_dir}")
 
     v2_results = []
     if v2_dir.exists():
-        v2_results = test_scripts("V2 PRODUCTION SCRIPTS", v2_dir)
+        v2_results = run_corpus_scripts("V2 PRODUCTION SCRIPTS", v2_dir)
     else:
         print(f"\nNo v2 fixtures at {v2_dir}")
 
     v1_fixed_results = []
     if v1_fixed_dir.exists():
-        v1_fixed_results = test_scripts("V1 SCRIPTS (auto-fixed to v2)", v1_fixed_dir)
+        v1_fixed_results = run_corpus_scripts("V1 SCRIPTS (auto-fixed to v2)", v1_fixed_dir)
     else:
         print(f"\nNo v1_fixed fixtures at {v1_fixed_dir}")
 
