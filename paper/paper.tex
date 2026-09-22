@@ -333,9 +333,9 @@ Table~\ref{tab:mcp_loop} summarizes the results.
 \label{tab:mcp_loop}
 \begin{tabular}{lrr}
 \toprule
-\textbf{Metric} & \textbf{llama3.2:3b} & \textbf{qwen2.5-coder} \\
+\textbf{Metric} & \textbf{llama3.2:3b} & \textbf{qwen2.5-coder:32b} \\
 \midrule
-R1 errors & 62 & 43 \\
+R1 errors & 62 & 20 \\
 R2 errors & 17 & 0 \\
 Overall fix rate & 73\% & 100\% \\
 Mean per-prompt fix rate & 63\% & 100\% \\
@@ -349,13 +349,13 @@ Fully corrected (0 errors R2) & 2/10 & 10/10 \\
 \end{tabular}
 \end{table}
 
-The code-specialized model achieved a 100\% fix rate: every v1 pattern was corrected after a single round of lint feedback, and it generated fewer initial errors (43 vs.\ 62). The general-purpose model corrected 73\% of errors but struggled with structural patterns---\texttt{Gosub} labels persisted in 5 of 10 scripts after feedback. Three patterns (W010 long lines, W005 assignment, V1\_FileRead) each resisted correction in 2 scripts.
+The code-specialized model achieved a 100\% fix rate: every v1 pattern was corrected after a single round of lint feedback, and it generated substantially fewer initial errors (20 vs.\ 62). The general-purpose model corrected 73\% of errors but struggled with structural patterns---\texttt{Gosub} labels persisted in 5 of 10 scripts after feedback. Three patterns (W010 long lines, W005 assignment, V1\_FileRead) each resisted correction in 2 scripts.
 
 These results demonstrate three findings: (1) even a small general-purpose LLM can self-correct most v1 patterns when given structured lint feedback, validating the MCP integration's practical utility; (2) code-specialized models dramatically outperform general-purpose models on this task (100\% vs.\ 73\% fix rate); and (3) structural patterns like label-to-function conversion remain the hardest for LLMs to self-correct without domain-specific guidance. Scaling this experiment to larger models and evaluating multi-round correction loops is planned for future work.
 
 \subsection{Threats to Validity}
 
-\textbf{External validity:} Our original v1 corpus was limited to 7 scripts from a single project. The expanded corpus of 676 scripts from 25 repositories substantially improves generalizability, though scripts were sampled by searching for known v1 signatures and may over-represent v1-pattern-dense code. Our LLM observations are based on 5 transcribed examples rather than a controlled experiment---a rigorous study should sample across models, temperatures, and prompt templates with full API logging. The MCP feedback loop experiment used a single model (llama3.2:3b) and 10 prompts; results may differ with larger models.
+\textbf{External validity:} Our original v1 corpus was limited to 7 scripts from a single project. The expanded corpus of 676 scripts from 25 repositories substantially improves generalizability, though scripts were sampled by searching for known v1 signatures and may over-represent v1-pattern-dense code. Our LLM observations are based on 5 transcribed examples rather than a controlled experiment---a rigorous study should sample across models, temperatures, and prompt templates with full API logging. The MCP feedback loop experiment used two models (llama3.2:3b, qwen2.5-coder:32b-instruct-q4\_K\_M) and 10 prompts each, at temperature 0.0 for reproducibility; raw per-prompt results for both are archived in \texttt{tests/mcp\_feedback\_loop\_results*.json}. Results may differ with other models, quantizations, or prompt sets.
 
 \textbf{Internal validity:} The coverage analysis against the converter is approximate (51\%), as the converter's 73 ``custom handlers'' are procedural functions whose exact scope is difficult to quantify.
 
