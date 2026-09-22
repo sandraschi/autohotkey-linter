@@ -400,8 +400,6 @@ class MCPDevelopmentCycle {
         MCPDevelopmentCycle.gui.Hide()
         MCPDevelopmentCycle.statusBar.SetText("GUI hidden. Press Ctrl+Alt+D to resume.")
     }
-        }
-    }
 }
 
 MCPDevelopmentCycle.Init()

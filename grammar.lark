@@ -5,9 +5,17 @@ start: (statement | function_def | class_def | hotkey)*
 statement: assignment | if_stmt | loop_stmt | switch_stmt | try_stmt | for_stmt | while_stmt
          | return_stmt | throw_stmt | expression | directive | include_stmt
 
-assignment: simple_assign | global_assign | static_assign | prop_assign
-simple_assign: variable ASSIGN_OP expression
-prop_assign: variable "." identifier ASSIGN_OP expression
+// prop_assign was removed: variable already resolves through postfix, which
+// includes ".identifier" chains, so "x.y := z" already matches simple_assign
+// -- prop_assign was a pure duplicate derivation of the same input, adding
+// ambiguity (and therefore Earley cost) for zero extra coverage.
+assignment: simple_assign | global_assign | static_assign
+// ":=" is right-associative/chainable in AHK (assignment is itself an
+// expression, e.g. `a := b.C := d`). Scoped narrowly to simple_assign only
+// (not global/static, which don't chain in practice) -- recursing through
+// the full `assignment` alternation here previously caused catastrophic
+// Earley ambiguity blowup (>30s/file); this narrower recursion is cheaper.
+simple_assign: variable ASSIGN_OP (simple_assign | expression)
 global_assign: "global"i variable ASSIGN_OP expression
 static_assign: "static"i variable ASSIGN_OP expression
 
@@ -48,7 +56,14 @@ unary: ("-" | "!" | "not"i | "++" | "--")? postfix
 
 postfix: primary (call_suffix | index_suffix | member_suffix | incdec_suffix)*
 call_suffix: "(" (call_arg ("," call_arg)*)? ")"
-call_arg: expression?
+// byref args (&var, optionally with an inline default &var := expr, e.g. in
+// DllCall("...", "UInt*", &size := 0)) are scoped to call_arg specifically,
+// not the general `primary` alternative -- byref only makes sense as a call
+// argument, and keeping the ASSIGN_OP recursion this narrow avoids the
+// catastrophic Earley ambiguity blowup that resulted from allowing it
+// anywhere an expression could appear.
+call_arg: "&" identifier (ASSIGN_OP expression)? -> call_byref_arg
+        | expression?
 index_suffix: "[" expression "]"
 member_suffix: "." identifier
 incdec_suffix: "++" | "--"
