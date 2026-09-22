@@ -38,7 +38,7 @@ PAPER_DATA = {
         "Impact": 4,
     },
     "verdict": "ACCEPT for arXiv cs.SE",
-    "github_url": "https://github.com/sandraschi/ahk-linter",
+    "github_url": "https://github.com/sandraschi/autohotkey-linter",
     "arxiv_url": None,
     "review_status": "Accepted for arXiv cs.SE",
 }
