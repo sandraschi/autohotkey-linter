@@ -37,10 +37,19 @@ PAPER_DATA = {
         "Writing": 7,
         "Impact": 4,
     },
-    "verdict": "ACCEPT for arXiv cs.SE",
+    "verdict": (
+        "Internal self-review, round 3 of 3: recommends the draft is clean enough to POST to "
+        "arXiv (not an acceptance -- arXiv has no peer-review accept/reject process for preprints, "
+        "only moderation). Not yet submitted anywhere; no arXiv ID exists."
+    ),
     "github_url": "https://github.com/sandraschi/autohotkey-linter",
     "arxiv_url": None,
-    "review_status": "Accepted for arXiv cs.SE",
+    "review_status": "Draft -- not yet submitted",
+    "review_history": [
+        {"round": 1, "verdict": "REJECT", "note": "Fabricated arXiv citation and a fictional experiment were found and removed."},
+        {"round": 2, "verdict": "WEAK ACCEPT", "note": "Two unverified citations flagged."},
+        {"round": 3, "verdict": "ACCEPT (self-review only)", "note": "Citations verified real; 3 minor mechanical citation errors remain (wrong author name, 2 orphaned bib entries)."},
+    ],
 }
 
 CHECKS_DATA = [

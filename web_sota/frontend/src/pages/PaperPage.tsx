@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Award, Star } from "lucide-react";
+import { ExternalLink, FileText, Info } from "lucide-react";
+
+interface ReviewRound {
+  round: number;
+  verdict: string;
+  note: string;
+}
 
 interface PaperData {
   title: string;
@@ -10,6 +16,7 @@ interface PaperData {
   github_url: string;
   arxiv_url: string | null;
   review_status: string;
+  review_history?: ReviewRound[];
 }
 
 export default function PaperPage() {
@@ -54,8 +61,8 @@ export default function PaperPage() {
             GitHub
           </a>
         )}
-        <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-lg text-sm border border-emerald-500/20">
-          <Award className="h-4 w-4" />
+        <span className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 rounded-lg text-sm border border-amber-500/20">
+          <Info className="h-4 w-4" />
           {paper.review_status}
         </span>
       </div>
@@ -85,17 +92,36 @@ export default function PaperPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-5 py-4">
-        <Star className="h-5 w-5 text-emerald-400" />
-        <span className="text-emerald-300 font-semibold">{paper.verdict}</span>
+      <div className="flex items-start gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4">
+        <Info className="h-5 w-5 text-amber-400 mt-0.5 shrink-0" />
+        <span className="text-zinc-300 text-sm leading-relaxed">{paper.verdict}</span>
       </div>
 
+      {paper.review_history && paper.review_history.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-zinc-100 mb-4">Self-Review History</h2>
+          <div className="space-y-2">
+            {paper.review_history.map((r) => (
+              <div key={r.round} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex gap-4">
+                <span className="text-sm font-bold text-zinc-500 shrink-0">R{r.round}</span>
+                <div>
+                  <span className="text-sm font-semibold text-zinc-200">{r.verdict}</span>
+                  <p className="text-sm text-zinc-400 mt-1">{r.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3">Citation</h2>
-        <pre className="text-xs text-zinc-400 bg-zinc-950 p-4 rounded-lg overflow-x-auto">
-Sandra Schipal. "ahk-lint: Detecting and Repairing AutoHotkey v1 Patterns in the Age of LLMs."
-arXiv preprint arXiv:... (2026).{`\n`}Code: {paper.github_url}
-        </pre>
+        <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <FileText className="h-4 w-4" /> Draft Status
+        </h2>
+        <p className="text-xs text-zinc-400 leading-relaxed">
+          This paper has not been submitted or posted anywhere -- there is no arXiv ID and no citation yet.
+          {" "}Code: {paper.github_url}
+        </p>
       </div>
     </div>
   );
