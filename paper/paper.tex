@@ -91,7 +91,7 @@ AHK v2's hybrid syntax presents a known difficulty: the same token sequence can 
 
 The linter is implemented in Python 3.11+ and uses a hybrid approach combining a Lark PEG grammar~\cite{lark} for AST parsing with regex-based rule matching as a fallback. The architecture has four layers:
 
-\textbf{Parsing layer:} An optional Lark PEG grammar parses AHK v2 syntax into an AST. When parsing fails (due to the grammar's known incompleteness), the linter falls back to per-line regex matching. This hybrid design ensures every file is analyzed regardless of parser limitations.
+\textbf{Parsing layer:} An optional Lark PEG grammar parses AHK v2 syntax into an AST. When parsing fails (due to the grammar's known incompleteness), the linter falls back to per-line regex matching. This hybrid design ensures every file is analyzed regardless of parser limitations. In the current implementation this fallback triggers on the large majority of real-world files, including our own v2 fixtures, because the grammar's construct coverage remains narrow (Section~\ref{sec:limitations}); the rule layer below is consequently regex-driven for most of its detections today.
 
 \textbf{Rule layer:} Seven rule modules apply detection and repair logic:
 
@@ -203,8 +203,9 @@ ide\_shortcuts.ahk & 2 & 1 & 1 & S005 \\
 On 13 native v2 production scripts, the linter reports zero false positive errors. Style warnings (e.g., long lines, missing directives) are present but do not indicate v1 patterns. Six additional auto-migrated (fixed) v1 scripts show 48 remaining errors, reflecting known limitations of the auto-fixer rather than false positives.
 
 \subsection{Expanded Corpus}
+\label{sec:expanded-corpus}
 
-To assess generalizability beyond a single project, we expanded our evaluation to 676 legacy v1 scripts from 25 public GitHub repositories, totaling 189,088 lines of code. Scripts were identified via GitHub code search for the \texttt{\#NoEnv} directive (removed in v2) and \texttt{\#Requires AutoHotkey v1} declarations, cloned with \texttt{--depth 1}, and filtered to exclude files under 10 bytes or over 500 KB. Table~\ref{tab:corpus_expanded} summarizes the results.
+To assess generalizability beyond a single project, we expanded our evaluation to 676 legacy v1 scripts from 25 public GitHub repositories, totaling 189,079 lines of code. Scripts were identified via GitHub code search for the \texttt{\#NoEnv} directive (removed in v2) and \texttt{\#Requires AutoHotkey v1} declarations, cloned with \texttt{--depth 1}, and filtered to exclude files under 10 bytes or over 500 KB. Table~\ref{tab:corpus_expanded} summarizes the results.
 
 \begin{table}[h]
 \centering\small
@@ -216,24 +217,26 @@ To assess generalizability beyond a single project, we expanded our evaluation t
 \midrule
 Scripts analyzed & 676 \\
 Unique repositories & 25 \\
-Total lines of code & 189,088 \\
-Total issues detected & 95,651 \\
+Total lines of code & 189,079 \\
+Total issues detected & 95,649 \\
 \quad Errors (runtime failures) & 21,205 \\
-\quad Warnings (style/safety) & 74,446 \\
-Mean issues per KLOC & 903 \\
+\quad Warnings (style/safety) & 74,444 \\
+Mean issues per KLOC & 902.7 \\
 Scripts with $\ge$1 error & 676 (100\%) \\
 \midrule
-\textbf{Top 5 most common patterns (by script count)} \\
-\quad S005 (deprecated directive) & 654 \\
-\quad P001 (\texttt{\#NoEnv} presence) & 650 \\
-\quad W008 (Gosub/label use) & 632 \\
-\quad W003 (MsgBox command) & 487 \\
-\quad W005 (assignment \texttt{=} vs \texttt{:=}) & 423 \\
+\textbf{Top 5 v1-pattern rules (by script count)} \\
+\quad S005 (missing \texttt{\#Requires}/\texttt{\#SingleInstance}) & 548 \\
+\quad W008 (\texttt{\%var\%} legacy dereference syntax) & 479 \\
+\quad W003 (\texttt{Gui, Add} command syntax) & 79 \\
+\quad S010 (tab characters, style) & 69 \\
+\quad W007 (\texttt{Gosub} label use) & 35 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Across the expanded corpus, \texttt{ahk-lint} detected 903 issues per KLOC on average. Every script in the corpus contained at least one error. The per-script density ranged from 250 to 2,500 issues/KLOC, reflecting the wide variation in v1 pattern concentration across codebases. The most prevalent patterns were the \texttt{\#NoEnv} directive (banned in v2), \texttt{Gosub} labels (replaced by functions in v2), and the command-style \texttt{MsgBox} syntax. These results confirm that v1 patterns are pervasive in public AHK code and that a dedicated linter is necessary for practical v2 adoption.
+Across the expanded corpus, \texttt{ahk-lint} detected 903 issues per KLOC on average. Every script in the corpus contained at least one error. The per-script density ranged from 5 to 2,875 issues/KLOC, reflecting the wide variation in v1 pattern concentration across codebases. Excluding rule P001 (see below), the most prevalent genuine v1 patterns were missing \texttt{\#Requires}/\texttt{\#SingleInstance} directives, the legacy \texttt{\%var\%} variable-dereference syntax, and command-style \texttt{Gui, Add} calls. These results confirm that v1 patterns are pervasive in public AHK code and that a dedicated linter is necessary for practical v2 adoption.
+
+Rule P001 -- omitted from the table above -- fired on 674 of 676 corpus scripts (99.7\%). It is not a v1-pattern detector: it signals that the file could not be fully parsed into an AST and was analyzed via regex fallback instead (Section~\ref{sec:limitations}). Because our grammar's syntax coverage is narrow, P001 fires on the large majority of real-world AHK files regardless of whether they use v1 or v2 syntax -- it fired on all 13 of our own hand-written v2 production fixtures as well -- so it should be read as a parser-coverage caveat on every number in this table, not as evidence about v1 prevalence specifically.
 
 \subsection{LLM Interaction Observations}
 
@@ -390,8 +393,9 @@ python mcp_server.py
 Dependencies: Python 3.11+, Lark~=1.1, Click. Optional: Node.js (for LSP integration), FastMCP (for MCP server mode).
 
 \section{Limitations and Future Work}
+\label{sec:limitations}
 
-\textbf{Limited parser:} Our Lark grammar fails on the full AHK v2 language due to reduce/reduce collisions. The thqby LSP (9,525 lines of TypeScript) is the only complete parser. Integrating it via subprocess or porting its tokenizer state machine to Python would enable more sophisticated analyses.
+\textbf{Limited parser coverage:} Our Lark grammar previously contained a reduce/reduce collision in its \texttt{if\_stmt} rule (a redundant alternative that duplicated the base production) that prevented the grammar from loading \emph{at all} -- every file, v1 or v2, fell back to per-line regex matching with zero exceptions. This was fixed after being caught during the expanded-corpus evaluation (Section~\ref{sec:expanded-corpus}, rule P001) by removing the duplicate alternative and switching from LALR(1) to Earley parsing, which tolerates the grammar's remaining ambiguity. The grammar now loads and correctly parses control-flow constructs it is given, but its coverage of AHK v2 syntax is still narrow (e.g., array/object literals, ternary expressions, and several assignment forms are not modelled), so most real-world files -- including our own clean v2 fixtures -- still fall back to regex analysis for at least part of their content. The thqby LSP (9,525 lines of TypeScript) remains the only complete parser; integrating it via subprocess or porting its tokenizer state machine to Python would enable more sophisticated AST-based analyses.
 
 \textbf{No LLM-driven fixes:} Complex patterns (GUI, labels, DllCall) currently require manual intervention. We plan to use MCP sampling (\texttt{ctx.sample()}) to let the linter request LLM-generated repair suggestions for hard cases.
 

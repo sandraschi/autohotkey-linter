@@ -93,12 +93,11 @@
   {
     "file": "adampash_texter_enabletriggers.ahk",
     "loc": 21,
-    "total": 6,
+    "total": 5,
     "errors": 5,
-    "warnings": 1,
-    "density": 285.7142857142857,
+    "warnings": 0,
+    "density": 238.09523809523807,
     "top_rules": [
-      "P001",
       "W008",
       "S005"
     ]
@@ -3835,14 +3834,14 @@
   {
     "file": "metaseed_metaKeyboard_keyboard.ahk",
     "loc": 88,
-    "total": 6,
+    "total": 5,
     "errors": 4,
-    "warnings": 2,
-    "density": 68.18181818181817,
+    "warnings": 1,
+    "density": 56.81818181818181,
     "top_rules": [
-      "P001",
       "W008",
-      "S005"
+      "S005",
+      "S021"
     ]
   },
   {
