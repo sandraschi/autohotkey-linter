@@ -1703,12 +1703,11 @@
   {
     "file": "denolfe_AutoHotkey_AppSpecific.ahk",
     "loc": 16,
-    "total": 3,
+    "total": 2,
     "errors": 2,
-    "warnings": 1,
-    "density": 187.5,
+    "warnings": 0,
+    "density": 125.0,
     "top_rules": [
-      "P001",
       "S005"
     ]
   },
@@ -7835,12 +7834,11 @@
   {
     "file": "tsaiid_ahk-smartwonder_detect-non-ascii-chars.ahk",
     "loc": 27,
-    "total": 4,
+    "total": 3,
     "errors": 3,
-    "warnings": 1,
-    "density": 148.14814814814815,
+    "warnings": 0,
+    "density": 111.1111111111111,
     "top_rules": [
-      "P001",
       "W008",
       "S005"
     ]
@@ -8315,14 +8313,14 @@
   {
     "file": "tsaiid_ahk-smartwonder_SmartWonder-MesaScale.ahk",
     "loc": 26,
-    "total": 8,
+    "total": 7,
     "errors": 7,
-    "warnings": 1,
-    "density": 307.69230769230774,
+    "warnings": 0,
+    "density": 269.2307692307692,
     "top_rules": [
-      "P001",
       "S005",
-      "V1_SendMode"
+      "V1_SendMode",
+      "V1_GroupAdd"
     ]
   },
   {
@@ -8444,14 +8442,14 @@
   {
     "file": "tsaiid_ahk-smartwonder_WangJJ.ahk",
     "loc": 41,
-    "total": 10,
+    "total": 9,
     "errors": 9,
-    "warnings": 1,
-    "density": 243.90243902439025,
+    "warnings": 0,
+    "density": 219.5121951219512,
     "top_rules": [
-      "P001",
       "S005",
-      "V1_SetKeyDelay"
+      "V1_SetKeyDelay",
+      "V1_SetTitleMatchMode"
     ]
   },
   {

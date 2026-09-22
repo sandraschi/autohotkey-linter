@@ -2,71 +2,113 @@
 
 start: (statement | function_def | class_def | hotkey)*
 
-statement: assignment | if_stmt | loop_stmt | try_stmt | for_stmt | while_stmt
+statement: assignment | if_stmt | loop_stmt | switch_stmt | try_stmt | for_stmt | while_stmt
          | return_stmt | throw_stmt | expression | directive | include_stmt
 
 assignment: simple_assign | global_assign | static_assign | prop_assign
-simple_assign: variable ":=" expression
-prop_assign: variable "." identifier ":=" expression
-global_assign: "global" variable ":=" expression
-static_assign: "static" variable ":=" expression
+simple_assign: variable ASSIGN_OP expression
+prop_assign: variable "." identifier ASSIGN_OP expression
+global_assign: "global"i variable ASSIGN_OP expression
+static_assign: "static"i variable ASSIGN_OP expression
 
-if_stmt: "if" "("? expression ")"? block ("else" "if" "("? expression ")"? block)* ("else" block)?
+ASSIGN_OP: ":=" | "+=" | "-=" | "//=" | "*=" | "/=" | ".=" | "|=" | "&=" | "^="
 
-loop_stmt: "Loop" expression? block
-          | "Loop" "Files" expression ("," expression)* block
-          | "Loop" "Parse" expression ("," expression)* block
+if_stmt: "if"i "("? expression ")"? block ("else"i "if"i "("? expression ")"? block)* ("else"i block)?
 
-for_stmt: "for" identifier ("," identifier)? "in" expression block
+loop_stmt: "loop"i expression? block
+          | "loop"i "files"i ","? expression ("," expression)* block
+          | "loop"i "parse"i ","? expression ("," expression)* block
 
-while_stmt: "while" "("? expression ")"? block
+switch_stmt: "switch"i "("? expression ")"? "{" case_clause* default_clause? "}"
+case_clause: "case"i expression ("," expression)* ":" statement*
+default_clause: "default"i ":" statement*
 
-try_stmt: "try" block ("catch" ("as" identifier)? block)? ("finally" block)?
+for_stmt: "for"i identifier ("," identifier)? "in"i expression block
 
-return_stmt: "return" expression?
-throw_stmt: "throw" expression
+while_stmt: "while"i "("? expression ")"? block
+
+try_stmt: "try"i block ("catch"i ("as"i identifier)? block)? ("finally"i block)?
+
+return_stmt: "return"i expression?
+throw_stmt: "throw"i expression
 
 block: "{" statement* "}" | statement
 
-expression: comparison
-comparison: addition (("=" | "!=" | "<" | ">" | "<=" | ">=") addition)*
-addition: multiplication (("+" | "-" | ".") multiplication)*
-multiplication: unary (("*" | "/" | "//" | "&" | "|") unary)*
-unary: ("-" | "!")? atom
+expression: ternary
+ternary: nullish ("?" expression ":" expression)?
+nullish: logic_or ("??" logic_or)*
+logic_or: logic_and (("||" | "or"i) logic_and)*
+logic_and: comparison (("&&" | "and"i) comparison)*
+comparison: addition (("=" | "==" | "!=" | "<>" | "<" | ">" | "<=" | ">=") addition)*
+// AHK allows implicit string concatenation of adjacent terms via whitespace
+// alone (e.g. "ahk_id " hwnd), so the operator here is optional.
+addition: multiplication (("+" | "-" | ".")? multiplication)*
+multiplication: unary (("*" | "/" | "//" | "&" | "|" | "^") unary)*
+unary: ("-" | "!" | "not"i | "++" | "--")? postfix
 
-atom: NUMBER -> number
+postfix: primary (call_suffix | index_suffix | member_suffix | incdec_suffix)*
+call_suffix: "(" (call_arg ("," call_arg)*)? ")"
+call_arg: expression?
+index_suffix: "[" expression "]"
+member_suffix: "." identifier
+incdec_suffix: "++" | "--"
+
+primary: NUMBER -> number
     | ESCAPED_STRING -> string
-    | "true" -> true
-    | "false" -> false
-    | "null" -> null
-    | variable
-    | call
-    | member_access
+    | SINGLE_QUOTED_STRING -> string
+    | "true"i -> true
+    | "false"i -> false
+    | "null"i -> null
+    | "unset"i -> unset
+    | array_literal
+    | object_literal
+    | fat_arrow
+    | "&" identifier -> byref
+    | "%" identifier "%" -> deref_variable
+    | identifier -> name
     | "(" expression ")"
 
-call: variable "(" (expression ("," expression)*)? ")"
-member_access: variable "." identifier
+array_literal: "[" (expression ("," expression)*)? "]"
+object_literal: "{" (obj_pair ("," obj_pair)*)? "}"
+obj_pair: (identifier | ESCAPED_STRING) ":" expression
+fat_arrow: "(" param_list? ")" "=>" expression
 
-variable: ("%"? identifier "%"? ("[" expression "]")? ("." identifier)*)+
+// Retained for compatibility with existing tree-walking code (checks/*.py);
+// both resolve through postfix now, kept as thin aliases.
+call: postfix
+member_access: postfix
+variable: postfix
+
 identifier: /[A-Za-z_][A-Za-z0-9_]*/
 
-function_def: "static" identifier "(" param_list? ")" block
+function_def: "static"i identifier "(" param_list? ")" block
            | identifier "(" param_list? ")" block
-class_def: "class" identifier ("extends" identifier)? "{" class_member* "}"
-class_member: identifier "(" param_list? ")" block
-            | "static" identifier ":=" expression
-            | identifier ":=" expression
+class_def: "class"i identifier ("extends"i identifier)? "{" class_member* "}"
+class_member: "static"i identifier "(" param_list? ")" block
+            | identifier "(" param_list? ")" block
+            | "static"i identifier ASSIGN_OP expression
+            | identifier ASSIGN_OP expression
 
-param_list: param ("," param)*
-param: identifier ("=" expression)?
+param_list: param ("," param)* ("," variadic_param)?
+          | variadic_param
+param: ("&")? identifier (("=" | ":=") expression)?
+variadic_param: "*" | identifier "*"
 
 hotkey: /[^:]+/ "::" block
 
-include_stmt: "#Include" expression
-directive: /#\w+/ (expression)*
+// Directive/include arguments are raw preprocessor text (version specifiers,
+// file paths with backslashes, etc.), not AHK expressions -- do not try to
+// parse them as expression trees.
+include_stmt: INCLUDE_LINE
+directive: DIRECTIVE_LINE
 
+// AHK's escape character is the backtick (`n, `t, `", ``, ...), not backslash --
+// backslash is an ordinary literal character (common in Windows paths/regex).
 NUMBER: /-?\d+(\.\d+)?([eE][-+]?\d+)?/
-ESCAPED_STRING: /"[^"\\]*(\\.[^"\\]*)*"/
+ESCAPED_STRING: /"[^"`]*(`.[^"`]*)*"/
+SINGLE_QUOTED_STRING: /'[^'`]*(`.[^'`]*)*'/
+INCLUDE_LINE: /#Include[ \t]*[^\r\n;]*/
+DIRECTIVE_LINE: /#[A-Za-z_]\w*[ \t]*[^\r\n;]*/
 COMMENT: /;.*/
 %ignore COMMENT
 %ignore /[ \t\r\n]+/
