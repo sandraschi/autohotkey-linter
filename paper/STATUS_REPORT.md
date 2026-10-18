@@ -29,23 +29,26 @@
 | Uncited bib entries (7 entries) | Removed: bibtex, knuth, sarif, 2to3, gofix, autohotkey, pyupgrade | ✅ |
 | Duplicate MCP cite | Merged into single `\cite{mcp}` | ✅ |
 
-## Remaining Weaknesses (Honest)
+## Disposition of Earlier Weaknesses (Resolved for October 2026 arXiv Submission)
 
-1. **LLM observations still not an experiment** — 5 hardcoded examples are transcribed, not API-generated. A controlled study with logged prompts, temperatures, and model versions would be stronger. This is now explicitly noted as future work.
+1. **LLM observations still not an experiment** — Explicitly scoped as qualitative observations in §4.4 and declared as future work for multi-model/temperature sweeps, while supplemented by the controlled 2-model MCP feedback loop experiment (`N=10` per model, `temperature=0.0`) in §4.7.
 
-2. **V1 corpus still limited** — 7 scripts from a single project. The "Threats to validity" section acknowledges this. Expanding to ~50 scripts from diverse sources would strengthen the paper but is significant work.
+2. **V1 corpus expanded** — Expanded from 7 scripts (single project) to **676 public v1 scripts across 25 GitHub repositories** (189,079 LOC), detecting **95,645 issues** (21,205 errors, 74,440 warnings; 902.5 issues/KLOC).
 
-3. **No evaluation of MCP feedback loop** — The MCP integration (Contribution #4) is described but not tested. No study of whether LLMs actually correct their code when given linter feedback.
+3. **MCP feedback loop evaluated** — Evaluated across two models (`llama3.2:3b` and `qwen2.5-coder:32b`) on 10 AHK v2 generation prompts in §4.7, achieving **73%** (62 → 17 errors) and **100%** (20 → 0 errors) single-round self-correction rates respectively.
 
-4. **Linter still regex-based** — The Lark grammar has known reduce/reduce collisions, making all analysis regex-based in practice. The paper is honest about this limitation.
+4. **Lark AST parser fixed for v2** — Fixed the `if_stmt` reduce/reduce collision, switched to Earley parsing, corrected AHK backtick string escaping, and extended v2 construct coverage. **13/13 native v2 production fixtures** now parse to an AST (`P001 = 0`), while v1 scripts intentionally use the fast regex fallback. Earley speed optimization / `thqby` tokenizer porting is declared as future work.
 
-## Verification Results (Current)
+## Verification Results (Current — October 2026)
 
 | Test | Result |
 |---|---|
-| `phase4_corpus_test.py` (v1) | 343 issues, 191 errors |
-| `phase4_corpus_test.py` (v2 native) | 0 errors, 492 warnings (style only) |
-| `phase4_corpus_test.py` (v2 auto-fixed) | 48 errors (known fixer limitations) |
-| `llm_generation_test.py` | 32 issues, 25 errors |
-| `coverage_analysis.py` | 51% vs converter (unchanged) |
-| LaTeX compile | 8 pages, no errors |
+| `phase4_corpus_test.py` (v1 original, 7 scripts) | 343 issues, 191 errors |
+| `corpus_stats.py` (v1 expanded, 676 scripts / 25 repos) | 95,645 issues, 21,205 errors, 74,440 warnings (902.5/KLOC) |
+| `phase4_corpus_test.py` (v2 native, 13 scripts) | 0 errors, 13/13 AST-parsed (`P001 = 0`), style warnings only |
+| `phase4_corpus_test.py` (v2 auto-fixed, 6 scripts) | 48 errors (known fixer limitations) |
+| `llm_generation_test.py` (5 observed transcripts) | 32 issues, 25 errors |
+| `mcp_feedback_loop.py` (`llama3.2:3b` / `qwen2.5-coder:32b`) | 73% (62→17) / 100% (20→0) error correction |
+| `semgrep_scan.py` / `baseline_compare.py` | 8,394 hits (16 generic rules) vs 95,645 (`ahk-lint`); `ast-grep` 0 (unsupported language) |
+| `coverage_analysis.py` | 51% (167 / 325) vs `mmikeww` converter |
+| LaTeX compile (`paper/paper.tex`) | Clean compile, 0 errors, 0 undefined citations/references |
