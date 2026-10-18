@@ -1,11 +1,11 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=1in]{geometry}
-\usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{cite}
 \usepackage{float}
 \usepackage{listings}
+\usepackage{hyperref}
 
 \lstdefinestyle{ahk}{
   basicstyle=\ttfamily\footnotesize,breaklines=true,
@@ -355,7 +355,7 @@ Fully corrected (0 errors R2) & 2/10 & 10/10 \\
 
 The code-specialized model achieved a 100\% fix rate: every v1 pattern was corrected after a single round of lint feedback, and it generated substantially fewer initial errors (20 vs.\ 62). The general-purpose model corrected 73\% of errors but struggled with \texttt{\%var\%} dereferences, which persisted in 5 of 10 scripts after feedback. Three patterns (W010 SetTimer, W005 FileRead, V1\_FileRead) each resisted correction in 2 scripts.
 
-These results demonstrate three findings: (1) even a small general-purpose LLM can self-correct most v1 patterns when given structured lint feedback, validating the MCP integration's practical utility; (2) code-specialized models dramatically outperform general-purpose models on this task (100\% vs.\ 73\% fix rate); and (3) structural patterns like label-to-function conversion remain the hardest for LLMs to self-correct without domain-specific guidance. Scaling this experiment to larger models and evaluating multi-round correction loops is planned for future work.
+These results demonstrate three findings: (1) even a small general-purpose LLM can self-correct most v1 patterns when given structured lint feedback, validating the MCP integration's practical utility; (2) code-specialized models dramatically outperform general-purpose models on this task (100\% vs.\ 73\% fix rate); and (3) legacy variable dereferencing (\texttt{\%var\%}), label-based timers (\texttt{SetTimer}), and command-style file I/O (\texttt{FileRead}) remain the hardest patterns for small general-purpose LLMs to self-correct in a single round. Scaling this experiment to larger models and evaluating multi-round correction loops is planned for future work.
 
 \subsection{Threats to Validity}
 
@@ -419,7 +419,7 @@ We presented \texttt{ahk-lint}, a dedicated migration linter for AutoHotkey v2. 
 
 The authors thank the AutoHotkey community for two decades of contributions that made this work possible. Development was assisted by AI coding tools, as is increasingly common in software engineering research. The rule set was derived from the community-maintained \texttt{AHK-v2-script-converter} by \texttt{mmikeww}.
 
-\begin{thebibliography}{20}
+\begin{thebibliography}{14}
 \bibitem{rustfix}
 \url{https://github.com/rust-lang/rustfix}. Rust compiler fix suggestions. Accessed October 2026.
 \bibitem{stratego}
@@ -431,11 +431,11 @@ H. Zhong et al., ``Mining API Mapping for Language Migration,'' \textit{ICSE 201
 \bibitem{libsync}
 S. Negara et al., ``Practical and Effective API Migration via Library Usage Mining,'' \textit{ASE 2020}.
 \bibitem{mcp}
-Model Context Protocol. \url{https://modelcontextprotocol.io/}. Anthropic, 2024.
+Model Context Protocol. \url{https://modelcontextprotocol.io/}. Anthropic, 2024. Accessed October 2026.
 \bibitem{thqby}
-thqby. \texttt{vscode-autohotkey2-lsp}. \url{https://github.com/thqby/vscode-autohotkey2-lsp}, 2023.
+thqby. \texttt{vscode-autohotkey2-lsp}. \url{https://github.com/thqby/vscode-autohotkey2-lsp}, 2023. Accessed October 2026.
 \bibitem{converter}
-mmikeww. \texttt{AHK-v2-script-converter}. \url{https://github.com/mmikeww/AHK-v2-script-converter}, 2024.
+mmikeww. \texttt{AHK-v2-script-converter}. \url{https://github.com/mmikeww/AHK-v2-script-converter}, 2024. Accessed October 2026.
 \bibitem{lark}
 Lark: A modern parsing library for Python. \url{https://github.com/lark-parser/lark}, 2021. Accessed October 2026.
 \bibitem{semgrep}

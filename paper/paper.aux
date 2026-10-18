@@ -7,50 +7,63 @@
 \citation{rustfix}
 \citation{stratego}
 \citation{txl}
-\citation{api_migration}
-\citation{libsync}
-\citation{fan2024survey}
-\citation{bouzenia2024repair}
-\citation{mcp}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Background}{2}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}AutoHotkey v1 vs v2}{2}{subsection.2.1}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Representative v1-to-v2 syntax changes.}}{2}{table.1}\protected@file@percent }
 \newlabel{tab:syntax}{{1}{2}{Representative v1-to-v2 syntax changes}{table.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}The Parsing Challenge}{2}{subsection.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Related Work}{2}{subsection.2.3}\protected@file@percent }
+\citation{api_migration}
+\citation{libsync}
+\citation{fan2024survey}
+\citation{bouzenia2024repair}
+\citation{mcp}
 \citation{semgrep}
 \citation{treesitter}
 \citation{astgrep}
 \citation{lark}
-\citation{converter}
 \@writefile{toc}{\contentsline {section}{\numberline {3}The Linter: \texttt  {ahk-lint}}{3}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Architecture}{3}{subsection.3.1}\protected@file@percent }
+\citation{converter}
 \citation{mcp}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Rule Extraction}{4}{subsection.3.2}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Coverage analysis vs mmikeww converter.}}{4}{table.2}\protected@file@percent }
 \newlabel{tab:coverage}{{2}{4}{Coverage analysis vs mmikeww converter}{table.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}MCP Integration}{4}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Evaluation}{4}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Empirical Setup}{4}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Evaluation}{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Empirical Setup}{5}{subsection.4.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Results}{5}{subsection.4.2}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Linter results on 7 legacy v1 scripts.}}{5}{table.3}\protected@file@percent }
 \newlabel{tab:v1}{{3}{5}{Linter results on 7 legacy v1 scripts}{table.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}LLM Interaction Observations}{5}{subsection.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Representative LLM interactions showing v1 pattern generation.}}{5}{table.4}\protected@file@percent }
-\newlabel{tab:llm}{{4}{5}{Representative LLM interactions showing v1 pattern generation}{table.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Per-Pattern Precision and Recall}{5}{subsection.4.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Per-pattern precision and recall estimate.}}{6}{table.5}\protected@file@percent }
-\newlabel{tab:pr}{{5}{6}{Per-pattern precision and recall estimate}{table.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Threats to Validity}{6}{subsection.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Reproducibility}{6}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Expanded Corpus}{5}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:expanded-corpus}{{4.3}{5}{Expanded Corpus}{subsection.4.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Linter results on expanded v1 corpus (676 scripts, 25 repos).}}{6}{table.4}\protected@file@percent }
+\newlabel{tab:corpus_expanded}{{4}{6}{Linter results on expanded v1 corpus (676 scripts, 25 repos)}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}LLM Interaction Observations}{6}{subsection.4.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Representative LLM interactions showing v1 pattern generation.}}{6}{table.5}\protected@file@percent }
+\newlabel{tab:llm}{{5}{6}{Representative LLM interactions showing v1 pattern generation}{table.5}{}}
+\citation{astgrep}
+\citation{semgrep}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Comparison with Grammar-Based Tools}{7}{subsection.4.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Comparison of ahk-lint vs semgrep on the expanded v1 corpus.}}{7}{table.6}\protected@file@percent }
+\newlabel{tab:baseline}{{6}{7}{Comparison of ahk-lint vs semgrep on the expanded v1 corpus}{table.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Per-Pattern Precision and Recall}{7}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}MCP Feedback Loop Evaluation}{7}{subsection.4.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Per-pattern precision and recall estimate.}}{8}{table.7}\protected@file@percent }
+\newlabel{tab:pr}{{7}{8}{Per-pattern precision and recall estimate}{table.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces MCP feedback loop: LLM self-correction rates ($N=10$ per model).}}{8}{table.8}\protected@file@percent }
+\newlabel{tab:mcp_loop}{{8}{8}{MCP feedback loop: LLM self-correction rates ($N=10$ per model)}{table.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8}Threats to Validity}{9}{subsection.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Reproducibility}{9}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Limitations and Future Work}{9}{section.6}\protected@file@percent }
+\newlabel{sec:limitations}{{6}{9}{Limitations and Future Work}{section.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{10}{section.7}\protected@file@percent }
 \bibcite{rustfix}{1}
 \bibcite{stratego}{2}
 \bibcite{txl}{3}
 \bibcite{api_migration}{4}
 \bibcite{libsync}{5}
 \bibcite{mcp}{6}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Limitations and Future Work}{7}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{7}{section.7}\protected@file@percent }
 \bibcite{thqby}{7}
 \bibcite{converter}{8}
 \bibcite{lark}{9}
@@ -59,4 +72,4 @@
 \bibcite{astgrep}{12}
 \bibcite{fan2024survey}{13}
 \bibcite{bouzenia2024repair}{14}
-\gdef \@abspage@last{8}
+\gdef \@abspage@last{11}
